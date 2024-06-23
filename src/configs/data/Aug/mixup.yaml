@@ -1,0 +1,4 @@
+mixup:
+  name: mixup
+  kwargs:
+    alpha: 0.2 # 0.2 or 0.4

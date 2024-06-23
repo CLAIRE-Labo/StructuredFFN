@@ -1,0 +1,5 @@
+randomaugment:
+  name: RandomAugment
+  kwargs:
+    n: 2
+    m: 14

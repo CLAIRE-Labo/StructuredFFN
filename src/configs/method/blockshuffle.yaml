@@ -1,0 +1,8 @@
+name: blockshuffle
+kwargs:
+  first_layer: true
+  nblocks: 2
+  training:
+    enabled: false
+  init:
+    post_init: ortho

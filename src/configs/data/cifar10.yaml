@@ -1,0 +1,14 @@
+defaults:
+  - Aug:
+    - randomaugment
+    - mixup
+
+name: cifar10
+train:
+  path: "/claire-rcp-scratch/shared/xwei/dataset"
+  train_batch: 512
+    # sweep:
+    #   values: [32, 64, 128, 256]
+test:
+  path: "/claire-rcp-scratch/shared/xwei/dataset"
+  test_batch: 512

@@ -1,0 +1,9 @@
+name: blockdense
+kwargs:
+  first_layer: true
+  nblocks: 4
+  rank: 256
+  training:
+    enabled: false
+  init:
+    post_init: ortho

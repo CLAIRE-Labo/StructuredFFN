@@ -1,0 +1,5 @@
+name: sgd
+kwargs:
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 5.0e-4

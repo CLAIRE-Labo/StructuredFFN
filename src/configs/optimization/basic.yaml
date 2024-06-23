@@ -1,0 +1,15 @@
+defaults:
+  - lr_scheduler: cosineannealinglr
+  - optimizer: adamw
+  - training: regular_training
+
+max_epoch: 1000
+device: cuda
+seed: 1005
+load_checkpoint: false
+save_checkpoint: false
+save_dir: /home/xwei/transformers/final_version/exp/ckpt/
+load_save_mode: epoch
+check_gradient_norm: false
+check_weight_norm: false
+gradient_clipping: false

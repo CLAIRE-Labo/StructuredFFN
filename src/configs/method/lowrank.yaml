@@ -1,0 +1,8 @@
+name: lowrank
+kwargs:
+  first_layer: true
+  rank: 256
+  training:
+    enabled: false
+  init:
+    post_init: svd

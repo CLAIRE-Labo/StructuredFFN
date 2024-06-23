@@ -1,0 +1,5 @@
+name: CosineAnnealingLR
+kwargs:
+  warmup_iter: 0.02
+  T_max: 1000
+  eta_min: 1.0e-7

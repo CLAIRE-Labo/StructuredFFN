@@ -1,0 +1,3 @@
+name: adam
+kwargs:
+  lr: 1.0e-4

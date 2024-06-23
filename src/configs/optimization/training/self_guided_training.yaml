@@ -1,0 +1,7 @@
+name: self_guided_training
+kwargs:
+  mode: fixedstep # fixedstep, fixedflops
+  scheduler: cosine
+  reduce_flop: false
+  max_step: null
+  max_step_ratio: 0.5 # ratio of the total steps
