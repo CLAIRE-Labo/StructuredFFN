@@ -1,4 +1,7 @@
-# Building on Efficient Foundations: Effectively Training LLMs with Structured Feedforward Layers
+---
+layout: post
+title: Building on Efficient Foundations Effectively Training LLMs with Structured Feedforward Layers
+---
 
 **Author list: Xiuying Wei (CLAIRE, EPFL),  Skander Moalla (CLAIRE, EPFL), Razvan Pascanu (Google DeepMind), Caglar Gulcehre (CLAIRE, EPFL)**
 
@@ -18,7 +21,7 @@ We consider three structured parameterizations to approximate a linear layer ($W
 
 The figure below shows how they perform and their reduced parameters and MAC. 
 
-![image-20240627224829793](method.png)
+<img src="assets/method.png" />
 
 
 
@@ -26,21 +29,21 @@ Then, we go deeper to investigate their common challenges including efficiency a
 
 ###  Maintaining efficiency during online decoding
 
-**Challenge:** While they have demonstrated materialized computational gains, they face challenges in the practical online decoding scenario of LLM, which may process only limited input tokens at one time, leading to under-utilization of computing resources and decreased efficiency due to the additional linear projection. 
+Challenge: While they have demonstrated materialized computational gains, they face challenges in the practical online decoding scenario of LLM, which may process only limited input tokens at one time, leading to under-utilization of computing resources and decreased efficiency due to the additional linear projection. 
 
-**Pre-merge technique:** We address this with a pre-merge technique that restores the original dense efficiency when the total number of tokens is quite small (e.g., 16). Taking advantage of the fact that these parametrizations do not have non-linearity, we propose to combine the structured matrices into a single dense layer and keep both the structured and the dense one for online decoding. Then, we can dynamically decide which parametrization to use based on the current batch size and setting.
+Pre-merge technique: We address this with a pre-merge technique that restores the original dense efficiency when the total number of tokens is quite small (e.g., 16). Taking advantage of the fact that these parametrizations do not have non-linearity, we propose to combine the structured matrices into a single dense layer and keep both the structured and the dense one for online decoding. Then, we can dynamically decide which parametrization to use based on the current batch size and setting.
 
 
 
 ### Addressing the optimization challenge
 
-**Challenge:** Using the efficient parametrization from initialization can suffer from optimization difficulty because the deep linear parametrization introduces additional symmetries, which is a source of proliferation of saddle points and generally less smooth loss function as pointed out in [2]. Empirically, we show that the deep linear form of  $U(Vx)$ leads to instability and loss spike or to slow convergence compared to the dense linear projection in the figure below.
+Challenge: Using the efficient parametrization from initialization can suffer from optimization difficulty because the deep linear parametrization introduces additional symmetries, which is a source of proliferation of saddle points and generally less smooth loss function as pointed out in [2]. Empirically, we show that the deep linear form of  $U(Vx)$ leads to instability and loss spike or to slow convergence compared to the dense linear projection in the figure below.
 
-![image-20240627225741589](/Users/nm_wnn/research/paper_project/efficient_linear_layer/code/Structured/docs/training_dynamic.png)
+<img src="assets/training_dynamic.png" />
 
 
 
-**Self-guided training:** Addressing poor training dynamics by tuning the learning rate and gradient clipping is costly and unstable. We propose a simpler, cost-effective approach called self-guided training, requiring minimal hyperparameter re-tuning. This method uses dense parametrization to efficiently navigate early stages, where symmetries introduced by the structured parametrization impact feature specialization, then transfers the control to $U$ and $V$, defined as:
+Self-guided training: Addressing poor training dynamics by tuning the learning rate and gradient clipping is costly and unstable. We propose a simpler, cost-effective approach called self-guided training, requiring minimal hyperparameter re-tuning. This method uses dense parametrization to efficiently navigate early stages, where symmetries introduced by the structured parametrization impact feature specialization, then transfers the control to $U$ and $V$, defined as:
 
 ​																		$o = \alpha \cdot W x + (1-\alpha) \cdot U(Vx)$,
 
@@ -56,33 +59,33 @@ We conduct our experiments at scale on Transformers ranging from 110M to 1.3B pa
 
 We investigate the efficiency of structured FFN and consider different numbers of tokens to discuss different scenarios.
 
-- **Large number of tokens** (usually concerning training, the prefill phase of inference, and extensive decoding cases)
+- Large number of tokens (usually concerning training, the prefill phase of inference, and extensive decoding cases)
 
   From width 1536, LowRank and BlockDense begin to enable about a 1.4$\times$ speed-up and a 2.5$\times$ speed-up with 63% and 32% parameters, respectively.
 
-![](latency.png)
+  <img src="assets/latency.png" />
 
 
 
-* ** Small number of tokens** (may happen at the decoding stage, especially for the online case)
+- Small number of tokens (may happen at the decoding stage, especially for the online case)
 
   We vary the batch of tokens to determine when to use efficient alternatives or choose pre-merged dense matrices. For example, with a 2048-width FFN, it is difficult to fully utilize resources on GPU with limited tokens. The performance improves significantly when using width 5120 and 6144, such as speed improvements of 2.63$\times$ speed-up of LowRank with 32% FFN parameters on total number of tokens of 2048 and 2.81$\times$ acceleration of BlockDense with 32% parameters on 1536 tokens.
 
   
+  <img src="assets/latency_bs.png" />
 
-![](latency_bs.png)
 
 ### Findings on efficient training
 
-* **Comparison between structured FFNs**
+- Comparison between structured FFNs
 
   With the model and training FLOPs fixed, we show that LowRank and BlockDense can be better than the BlockShuffle for FFN in NLP tasks. However, we think this is task-dependent, because in vision tasks where block-diagonal matrices are better for local information, we find that block-diagonal matrix is a more suitable inductive bias (see experiments in the appendix).
 
-  ![](gpt.png)
+  ![](assets/gpt.png)
 
 
 
-*  **Scaling analysis** 
+- Scaling analysis 
 
   As we scale the model size, we find steeper scaling curves of structured matrices. Below, it's a figure for LowRank, but the other two hold similar curves. Specifically, 
 
@@ -92,15 +95,16 @@ We investigate the efficiency of structured FFN and consider different numbers o
 
   ​	*(iii) Given fixed training FLOPs budget, a wider and structured network with more tokens may achieve comparable or superior performance to dense networks at the optimal trade-off.*
 
-  <img src="scaling_law_lowrank.png" style="zoom:30%;" />
+  <img src="assets/scaling_law_lowrank.png" />
 
-  ### Self-guided training 
+
+### Self-guided training 
 
   With the self-guided training, our performance gets closer to dense models. For example, with the same training FLOPs, our 1.3B model has a 0.4 perplexity loss vs. the dense one and enjoys about 2.5x FFN speed-up for inference. Additionally, we compare our method with another advanced baseline that trains structured parametrizations with more tokens, showing that ours achieves comparable or superior results even with the same number of tokens.
 
   
 
-<img src="fig_sgt_lowrank.png" style="zoom:35%;" />
+<img src="assets/fig_sgt_lowrank.png" />
 
 ### Wide and Structured network
 
@@ -108,15 +112,15 @@ As maintaining the parameter ratio of attention to FFN can be important, in this
 
 It can be seen that our methods achieve an 8% and 17% maximum throughput boost, respectively, while maintaining or slightly improving perplexity. TP refers to the maximum throughput measured on a generation length of 256.
 
-<img src="wide_structured.png" style="zoom:35%;" />
+<img src="assets/wide_structured.png" />
 
 
 
 ## Conclusion and Limitation
 
-**Conclusion:** In this paper, we conducted extensive experiments investigating the use of structured matrices to parameterize FFN in Transformers, with models up to 1.3B parameters on the RefinedWeb dataset. Our primary aim was not to determine which structured matrices perform best, as this can be task-dependent, but to explore common issues including efficiency and optimization challenges of existing structured matrices as well as BlockDense. 
+Conclusion: In this paper, we conducted extensive experiments investigating the use of structured matrices to parameterize FFN in Transformers, with models up to 1.3B parameters on the RefinedWeb dataset. Our primary aim was not to determine which structured matrices perform best, as this can be task-dependent, but to explore common issues including efficiency and optimization challenges of existing structured matrices as well as BlockDense. 
 
-**Limitation:** BlockDense and BlockShuffle are more complicated than LowRank. In this work, we only explored a limited range of hyperparameter settings of them. Also, we primarily focused on language modeling with limited vision experiments included in the appendix. Additionally, we did not explore the optimal scaling laws for structured matrices, which may further enhance performance. 
+Limitation: BlockDense and BlockShuffle are more complicated than LowRank. In this work, we only explored a limited range of hyperparameter settings of them. Also, we primarily focused on language modeling with limited vision experiments included in the appendix. Additionally, we did not explore the optimal scaling laws for structured matrices, which may further enhance performance. 
 
 ## References
 
