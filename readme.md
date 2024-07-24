@@ -110,3 +110,22 @@ torchrun --nnodes=1 --nproc_per_node=1 refinedweb_experiment.py  model=gpt2l met
 # Ours (self-guided training)
 torchrun --nnodes=1 --nproc_per_node=1 refinedweb_experiment.py model=gpt2l method=lowrank method.kwargs.rank=768 model.kwargs.hidden_dim=1536 model.kwargs.ffn_dim=7424 model.kwargs.attn_dim=768 model.kwargs.num_q_heads=12 model.kwargs.num_kv_heads=4 optimization.optimizer.kwargs.lr=2.5e-4 optimization.max_tokens=14580000000 optimization/training=self_guided_training optimization.training.kwargs.mode=fixedflop optimization.training.kwargs.reduce_flop=true optimization.training.kwargs.max_step_ratio=0.395
 ```
+
+### Citation
+If you find this repo useful for your research, please consider citing the paper:
+```
+@article{wei2024building,
+  title={Building on Efficient Foundations: Effectively Training LLMs with Structured Feedforward Layers},
+  author={Wei, Xiuying and Moalla, Skander and Pascanu, Razvan and Gulcehre, Caglar},
+  journal={arXiv preprint arXiv:2406.16450},
+  year={2024}
+}
+
+@article{wei2024investigating,
+  title={Investigating Low-Rank Training in Transformer Language Models: Efficiency and Scaling Analysis},
+  author={Wei, Xiuying and Moalla, Skander and Pascanu, Razvan and Gulcehre, Caglar},
+  journal={arXiv preprint arXiv:2407.09835},
+  year={2024}
+}
+
+```
